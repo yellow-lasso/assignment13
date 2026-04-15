@@ -1,6 +1,7 @@
-from functools import wraps
+functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import jsonify
 from models import db, User, Trade
 
 app = Flask(__name__)
