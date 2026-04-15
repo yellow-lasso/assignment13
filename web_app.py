@@ -149,6 +149,54 @@ def delete_trade(item_id):
 
     return redirect(url_for("home"))
 
+@app.route("/api/v1/trades")
+@login_required
+def api_get_trades():
+    user = get_current_user()
+    trades = Trade.query.filter_by(user_id=user.id).all()
+
+    results = []
+    for trade in trades:
+        results.append({
+            "id": trade.id,
+            "representative": trade.representative,
+            "trade_date": trade.trade_date,
+            "disclosure_date": trade.disclosure_date,
+            "ticker": trade.ticker,
+            "asset_type": trade.asset_type,
+            "transaction_type": trade.transaction_type,
+            "amount_min": trade.amount_min,
+            "amount_max": trade.amount_max,
+            "source": trade.source
+        })
+
+    return jsonify(results)
+
+@app.route("/api/v1/trades/<int:item_id>")
+@login_required
+def api_get_trade(item_id):
+    user = get_current_user()
+
+    trade = Trade.query.filter_by(id=item_id, user_id=user.id).first()
+
+    if not trade:
+        return jsonify({"error": "Trade not found"}), 404
+
+    result = {
+        "id": trade.id,
+        "representative": trade.representative,
+        "trade_date": trade.trade_date,
+        "disclosure_date": trade.disclosure_date,
+        "ticker": trade.ticker,
+        "asset_type": trade.asset_type,
+        "transaction_type": trade.transaction_type,
+        "amount_min": trade.amount_min,
+        "amount_max": trade.amount_max,
+        "source": trade.source
+    }
+
+    return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
